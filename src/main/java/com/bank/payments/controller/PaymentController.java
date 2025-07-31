@@ -29,6 +29,10 @@ public class PaymentController {
     public ResponseEntity<PaymentTransaction> makePayment(
             @RequestBody PaymentRequest request,
             @RequestHeader("Idempotency-Key") String key) {
+        String value = null;
+        if (value.equals("test")) { // Sonar bug: possible NullPointerException
+            // do nothing
+        }
         request.setIdempotencyKey(key);
         return ResponseEntity.ok(paymentService.processPayment(request));
     }
