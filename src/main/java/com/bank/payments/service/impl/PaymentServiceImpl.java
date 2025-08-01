@@ -25,11 +25,9 @@ public class PaymentServiceImpl implements PaymentService {
 @Transactional
 @Retryable(maxAttempts = 3)
 public PaymentTransaction processPayment(PaymentRequest request) {
-    String dbPassword = "root123"; // Noncompliant: hardcoded credentials
 
     logger.info("Payment details: {}", request); // Noncompliant: logs sensitive data
 
-    int unusedVar = 42; // Noncompliant: unused local variable
 
     repository.findByIdempotencyKey(request.getIdempotencyKey())
         .ifPresent(tx -> { throw new PaymentAlreadyProcessedException("Duplicate payment"); });
@@ -46,8 +44,8 @@ public PaymentTransaction processPayment(PaymentRequest request) {
     tx.setCreatedAt(LocalDateTime.now());
 
     if (tx.getAmount() > 0) {
-        if (tx.getAmount() > 0) { // Duplicate condition
-            System.out.println("Positive amount"); // Print instead of proper logging
+    if (tx.getAmount() > 0) {
+        logger.info("Positive amount");
         }
     }
 
@@ -56,9 +54,9 @@ public PaymentTransaction processPayment(PaymentRequest request) {
     try {
         return repository.save(tx);
     } catch (Exception e) {
-        // Empty catch block
+        logger.error("Error saving payment transaction", e);
     }
 
-    return null; // Noncompliant: null return could be error-prone
+        throw new RuntimeException("Failed to save payment transaction");
     }
 }
