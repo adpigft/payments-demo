@@ -30,7 +30,7 @@ public class PaymentController {
             @RequestBody PaymentRequest request,
             @RequestHeader("Idempotency-Key") String key) {
         String value = null;
-        if (value.equals("test")) { // Sonar bug: possible NullPointerException
+        if (value != null && value.equals("test")) {
             // do nothing
         }
         request.setIdempotencyKey(key);
