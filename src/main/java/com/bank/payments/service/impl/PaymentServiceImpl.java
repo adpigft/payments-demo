@@ -1,4 +1,6 @@
+import org.slf4j.Logger;
 package com.bank.payments.service.impl;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +15,7 @@ import com.bank.payments.repository.PaymentTransactionRepository;
 import com.bank.payments.service.PaymentService;
 
 @Service
+    private static final Logger logger = LoggerFactory.getLogger(PaymentServiceImpl.class);
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentTransactionRepository repository;
@@ -25,11 +28,9 @@ public class PaymentServiceImpl implements PaymentService {
 @Transactional
 @Retryable(maxAttempts = 3)
 public PaymentTransaction processPayment(PaymentRequest request) {
-    String dbPassword = "root123"; // Noncompliant: hardcoded credentials
 
     logger.info("Payment details: {}", request); // Noncompliant: logs sensitive data
 
-    int unusedVar = 42; // Noncompliant: unused local variable
 
     repository.findByIdempotencyKey(request.getIdempotencyKey())
         .ifPresent(tx -> { throw new PaymentAlreadyProcessedException("Duplicate payment"); });
@@ -46,8 +47,8 @@ public PaymentTransaction processPayment(PaymentRequest request) {
     tx.setCreatedAt(LocalDateTime.now());
 
     if (tx.getAmount() > 0) {
-        if (tx.getAmount() > 0) { // Duplicate condition
-            System.out.println("Positive amount"); // Print instead of proper logging
+    if (tx.getAmount() > 0) {
+        logger.info("Positive amount");
         }
     }
 
@@ -56,9 +57,9 @@ public PaymentTransaction processPayment(PaymentRequest request) {
     try {
         return repository.save(tx);
     } catch (Exception e) {
-        // Empty catch block
+        logger.error("Error saving payment transaction", e);
     }
 
-    return null; // Noncompliant: null return could be error-prone
+        throw new RuntimeException("Failed to save payment transaction", e);
     }
 }
