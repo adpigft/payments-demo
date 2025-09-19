@@ -5,25 +5,17 @@
 
 ---
 
-## Data Structures
-| Class/Interface           | Description                                      |
-|--------------------------|------------------------------------------------|
-| `PaymentRequest`         | DTO containing payment request details.         |
-| `PaymentTransaction`     | Entity representing a payment transaction.      |
-| `PaymentTransactionRepository` | Repository interface for CRUD operations on `PaymentTransaction`. |
-
----
-
 ## Class: PaymentServiceImpl
 
-### Dependencies
-- `PaymentTransactionRepository repository`: Repository for accessing and saving payment transactions.
+| Member                 | Type                          | Description                                  |
+|------------------------|-------------------------------|----------------------------------------------|
+| `repository`           | `PaymentTransactionRepository`| Repository for CRUD operations on payments.  |
 
 ### Constructor
-```java
-public PaymentServiceImpl(PaymentTransactionRepository repository)
-```
-- Injects the repository dependency.
+
+| Parameter              | Type                          | Description                                  |
+|------------------------|-------------------------------|----------------------------------------------|
+| `repository`           | `PaymentTransactionRepository`| Injected repository instance.                 |
 
 ---
 
@@ -36,90 +28,82 @@ public PaymentTransaction processPayment(PaymentRequest request)
 ```
 
 ### Description
-Processes a payment request by creating and saving a new `PaymentTransaction`. The method ensures idempotency by checking if a transaction with the same idempotency key already exists. It is transactional and supports retrying up to 3 attempts in case of failure.
+Processes a payment request by validating idempotency, creating a new payment transaction, and saving it to the repository. The method is transactional and supports retrying up to 3 times in case of failure.
 
 ### Parameters
-| Name    | Type           | Description                      |
-|---------|----------------|--------------------------------|
-| request | `PaymentRequest` | Contains payment details to process. |
+
+| Name                   | Type              | Description                          |
+|------------------------|-------------------|------------------------------------|
+| `request`              | `PaymentRequest`  | Contains payment details to process.|
 
 ### Returns
-- `PaymentTransaction`: The saved payment transaction on success.
-- `null`: If saving the transaction fails (error-prone behavior).
+
+| Type                   | Description                          |
+|------------------------|------------------------------------|
+| `PaymentTransaction`   | The saved payment transaction or `null` if saving fails.|
 
 ### Behavior and Logic
-| Step | Description                                                                                  |
-|-------|----------------------------------------------------------------------------------------------|
-| 1     | Hardcoded database password declared (security risk).                                       |
-| 2     | Logs payment request details including sensitive data (security risk).                      |
-| 3     | Declares an unused local variable `unusedVar`.                                              |
-| 4     | Checks for existing transaction with the same idempotency key; throws exception if found.  |
-| 5     | Creates a new `PaymentTransaction` and populates fields from the request.                   |
-| 6     | Sets initial status to `"PROCESSING"`.                                                     |
-| 7     | Contains a redundant nested condition checking if amount > 0 and prints to console.         |
-| 8     | Updates status to `"SUCCESS"`.                                                             |
-| 9     | Attempts to save the transaction in the repository.                                        |
-| 10    | Catches exceptions silently without handling or logging.                                   |
-| 11    | Returns `null` if saving fails, which may lead to null pointer exceptions downstream.      |
+
+- Checks for existing payment with the same idempotency key to prevent duplicate processing.
+- Creates a new `PaymentTransaction` and populates it with data from the request.
+- Sets the transaction status initially to `"PROCESSING"`, then updates to `"SUCCESS"`.
+- Uses `LocalDateTime.now()` to set the creation timestamp.
+- Contains a redundant nested condition checking if the amount is positive.
+- Uses `System.out.println` for logging a positive amount instead of a proper logging framework.
+- Attempts to save the transaction to the repository.
+- Catches exceptions during save but does not handle them (empty catch block).
+- Returns `null` if saving fails, which may lead to error-prone behavior.
 
 ---
 
-## Annotations
-| Annotation       | Purpose                                                                                  |
-|------------------|------------------------------------------------------------------------------------------|
-| `@Service`       | Marks the class as a Spring service component.                                           |
-| `@Transactional` | Ensures the method executes within a transaction context.                                |
-| `@Retryable`     | Enables retry logic with a maximum of 3 attempts on failure.                             |
+## Noncompliant and Code Quality Issues
 
----
-
-## Exceptions
-| Exception                      | Condition                                                                                  |
-|-------------------------------|--------------------------------------------------------------------------------------------|
-| `PaymentAlreadyProcessedException` | Thrown if a payment with the same idempotency key has already been processed.             |
+| Issue                                      | Location/Line                         | Description                                                                                  |
+|--------------------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------|
+| Hardcoded credentials                       | Inside `processPayment` method      | `String dbPassword = "root123";` - security risk, credentials should not be hardcoded.       |
+| Logging sensitive data                      | Inside `processPayment` method      | Logs full payment request details, potentially exposing sensitive information.                |
+| Unused local variable                       | Inside `processPayment` method      | `int unusedVar = 42;` declared but never used.                                              |
+| Duplicate condition                         | Inside `processPayment` method      | Nested `if (tx.getAmount() > 0)` repeated unnecessarily.                                    |
+| Improper logging                            | Inside `processPayment` method      | Uses `System.out.println` instead of a proper logging framework.                             |
+| Empty catch block                           | Inside `processPayment` method      | Exceptions during save are caught but not handled or logged.                                |
+| Null return                                | Inside `processPayment` method      | Returns `null` on failure, which can cause `NullPointerException` downstream.               |
 
 ---
 
 ## Insights
 
-- **Security Concerns:**
-  - Hardcoded database password (`dbPassword`) is present in the method, which is a critical security vulnerability.
-  - Logging of sensitive payment request details can lead to exposure of confidential information.
-  
-- **Code Quality Issues:**
-  - Unused local variable `unusedVar` should be removed.
-  - Duplicate conditional check for `tx.getAmount() > 0` is redundant.
-  - Use of `System.out.println` for logging is inappropriate; proper logging framework should be used.
-  - Empty catch block suppresses exceptions silently, making debugging difficult.
-  - Returning `null` on failure is error-prone; consider throwing exceptions or using `Optional`.
-
-- **Idempotency Handling:**
-  - The method correctly prevents duplicate processing by checking the idempotency key before proceeding.
-
-- **Transaction Management:**
-  - The method is transactional and supports retrying, which helps in handling transient failures.
+- The method enforces idempotency by checking for existing transactions with the same idempotency key, preventing duplicate payments.
+- Transactional annotation ensures atomicity of the payment processing.
+- Retry mechanism with `@Retryable` improves robustness against transient failures.
+- The presence of hardcoded credentials and logging sensitive data are critical security concerns.
+- Code quality can be improved by removing unused variables, fixing redundant conditions, and replacing `System.out.println` with proper logging.
+- Exception handling should be enhanced to log or propagate errors instead of silently swallowing them.
+- Returning `null` on failure is risky; consider throwing exceptions or using `Optional` to represent absence of a result.
 
 ---
 
-# Summary Table of Noncompliant Practices
+## Dependencies
 
-| Issue                          | Location/Line                        | Impact                                  |
-|--------------------------------|------------------------------------|-----------------------------------------|
-| Hardcoded credentials          | `dbPassword` variable               | Security vulnerability                   |
-| Logging sensitive data         | `logger.info("Payment details: {}", request)` | Potential data leak                      |
-| Unused variable                | `unusedVar`                        | Code clutter and confusion               |
-| Duplicate condition            | Nested `if (tx.getAmount() > 0)`  | Redundant code                           |
-| Improper logging               | `System.out.println`               | Inconsistent logging practice            |
-| Empty catch block              | `catch (Exception e) { }`          | Silent failure, debugging difficulty     |
-| Returning null on failure      | `return null;`                     | Risk of null pointer exceptions          |
+| Dependency                          | Purpose                                  |
+|-----------------------------------|------------------------------------------|
+| `PaymentTransactionRepository`    | Data access layer for payment transactions. |
+| `PaymentRequest`                  | DTO containing payment request data.     |
+| `PaymentTransaction`              | Entity representing a payment transaction.|
+| `PaymentAlreadyProcessedException`| Exception thrown on duplicate payment attempts.|
+| Spring Framework Annotations       | `@Service`, `@Transactional`, `@Retryable` for service behavior and transaction management.|
 
 ---
 
-# Recommendations
+## Summary Table of Key Attributes in `PaymentTransaction`
 
-- Remove hardcoded credentials and use secure configuration management.
-- Avoid logging sensitive information.
-- Remove unused variables and redundant conditions.
-- Replace `System.out.println` with proper logging.
-- Handle exceptions properly, at least logging them.
-- Avoid returning `null`; consider throwing exceptions or returning `Optional<PaymentTransaction>`.
+| Attribute           | Source                          | Description                          |
+|---------------------|--------------------------------|------------------------------------|
+| `sourceAccount`     | `request.getSourceAccount()`    | Account initiating the payment.    |
+| `destinationAccount`| `request.getDestinationAccount()`| Account receiving the payment.     |
+| `amount`            | `request.getAmount()`            | Payment amount.                    |
+| `currency`          | `request.getCurrency()`          | Currency of the payment.           |
+| `type`              | `request.getType()`              | Type/category of the payment.      |
+| `remarks`           | `request.getRemarks()`           | Additional notes or comments.      |
+| `status`            | Set internally (`PROCESSING` -> `SUCCESS`)| Current status of the transaction.|
+| `idempotencyKey`    | `request.getIdempotencyKey()`   | Key to ensure idempotent processing.|
+| `createdAt`         | `LocalDateTime.now()`            | Timestamp of transaction creation. |

@@ -1,39 +1,32 @@
-# Documentation for `PaymentsDemoApplication.java`
+# PaymentsDemoApplication
 
 ## Overview
-
-This Java class is the entry point for a Spring Boot application within the `com.bank.payments` package. It is responsible for bootstrapping and launching the Spring Boot application context.
+This Java class serves as the entry point for a Spring Boot application within the `com.bank.payments` package. It is responsible for bootstrapping and launching the Spring Boot application context.
 
 ## Package
+- `com.bank.payments`
 
-| Package Name       |
-|--------------------|
-| `com.bank.payments` |
+## Imports
+| Import Statement                          | Description                                  |
+|-----------------------------------------|----------------------------------------------|
+| `org.springframework.boot.SpringApplication` | Provides a convenient way to bootstrap a Spring application that is started from a main() method. |
+| `org.springframework.boot.autoconfigure.SpringBootApplication` | Indicates a configuration class that declares one or more `@Bean` methods and triggers auto-configuration and component scanning. |
 
 ## Class: `PaymentsDemoApplication`
+- Annotated with `@SpringBootApplication`, which is a convenience annotation that adds:
+  - `@Configuration`: Tags the class as a source of bean definitions.
+  - `@EnableAutoConfiguration`: Enables Spring Boot’s auto-configuration mechanism.
+  - `@ComponentScan`: Enables component scanning for the package.
 
-| Modifier | Type   | Description                                  |
-|----------|--------|----------------------------------------------|
-| `public` | class  | Main class annotated as a Spring Boot application |
+### Method: `main`
+| Modifier | Return Type | Method Name | Parameters       | Description                                  |
+|----------|-------------|-------------|------------------|----------------------------------------------|
+| `public static` | `void`      | `main`      | `String[] args` | The standard entry point for Java applications. It launches the Spring Boot application by invoking `SpringApplication.run()`. |
 
-### Annotations
-
-| Annotation           | Description                                      |
-|----------------------|------------------------------------------------|
-| `@SpringBootApplication` | Indicates this is a Spring Boot application and triggers auto-configuration, component scanning, and configuration properties support |
-
-### Methods
-
-| Method Signature                          | Description                                  |
-|-----------------------------------------|----------------------------------------------|
-| `public static void main(String[] args)` | Main method that launches the Spring Boot application by invoking `SpringApplication.run()` |
-
-### Method Details
-
-- **`main`**: This method serves as the application entry point. It calls `SpringApplication.run()` with the current class and command-line arguments to start the embedded server and initialize the Spring context.
+- The `main` method calls `SpringApplication.run()` with the current class and command-line arguments to start the Spring Boot application.
 
 ## Insights
-
-- The class uses Spring Boot's auto-configuration and component scanning features through the `@SpringBootApplication` annotation, simplifying application setup.
-- The `main` method delegates the application startup to Spring Boot's `SpringApplication.run()`, which handles the lifecycle and context initialization.
-- This class contains only application startup logic and no business logic or data structures.
+- This class contains only the application bootstrap logic and no business logic or data structures.
+- The use of `@SpringBootApplication` simplifies configuration by combining multiple annotations.
+- The class is designed to be minimal and focused solely on starting the Spring Boot context.
+- This setup is typical for Spring Boot applications and follows best practices for application entry points.

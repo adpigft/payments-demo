@@ -1,7 +1,7 @@
 # PaymentController Documentation
 
 ## Overview
-`PaymentController` is a Spring REST controller responsible for handling payment transaction requests. It exposes an endpoint to process payments by delegating the business logic to the `PaymentService`.
+`PaymentController` is a Spring REST controller responsible for handling payment transaction requests. It exposes an endpoint to process payment transactions by delegating the business logic to the `PaymentService`.
 
 ---
 
@@ -14,9 +14,9 @@
 | Annotation           | Description                                                  |
 |----------------------|--------------------------------------------------------------|
 | `@RestController`    | Marks the class as a REST controller, combining `@Controller` and `@ResponseBody`. |
-| `@RequestMapping`    | Maps HTTP requests to `/api/payments` base path.             |
+| `@RequestMapping`    | Maps HTTP requests to `/api/payments` base URL.              |
 | `@PostMapping`       | Maps HTTP POST requests to the `makePayment` method.         |
-| `@Operation`         | Provides OpenAPI/Swagger metadata for the endpoint.           |
+| `@Operation`         | Provides OpenAPI/Swagger metadata for the endpoint.          |
 
 ---
 
@@ -25,7 +25,7 @@
 |---------------------|--------------------------------------------------------------|
 | `PaymentService`    | Service layer component that contains the business logic for processing payments. |
 | `PaymentRequest`    | DTO representing the payment request payload.                |
-| `PaymentTransaction`| Model representing the result of a payment transaction.      |
+| `PaymentTransaction`| Model representing the result of a processed payment.        |
 
 ---
 
@@ -37,32 +37,29 @@ public PaymentController(PaymentService paymentService)
 
 ---
 
-## Endpoints
-
-### `POST /api/payments`
-
-#### Description
-Processes a payment transaction.
-
-#### Method Signature
+## Endpoint: `makePayment`
 ```java
+@PostMapping
 public ResponseEntity<PaymentTransaction> makePayment(
-    @RequestBody PaymentRequest request,
-    @RequestHeader("Idempotency-Key") String key)
+        @RequestBody PaymentRequest request,
+        @RequestHeader("Idempotency-Key") String key)
 ```
 
-#### Parameters
+### Description
+Processes a payment transaction based on the provided payment request and an idempotency key.
+
+### Parameters
 | Parameter           | Source          | Description                                  |
 |---------------------|-----------------|----------------------------------------------|
 | `request`           | Request Body    | Contains payment details to be processed.    |
-| `key`               | Request Header  | Idempotency key to ensure request uniqueness.|
+| `key`               | Request Header  | Idempotency key to prevent duplicate processing. |
 
-#### Behavior
+### Behavior
 - Sets the idempotency key on the `PaymentRequest`.
 - Calls `paymentService.processPayment(request)` to process the payment.
-- Returns the processed `PaymentTransaction` wrapped in a `ResponseEntity` with HTTP 200 OK.
+- Returns the processed `PaymentTransaction` wrapped in an HTTP 200 OK response.
 
-#### Notes
+### Notes
 - There is a code snippet with a potential `NullPointerException`:
   ```java
   String value = null;
@@ -70,27 +67,26 @@ public ResponseEntity<PaymentTransaction> makePayment(
       // do nothing
   }
   ```
-  This is a known Sonar bug and does not affect the payment processing logic.
+  This appears to be a SonarQube bug example or placeholder and does not affect the actual payment processing logic.
 
 ---
 
 ## Insights
-- The controller follows RESTful principles and uses Spring annotations effectively.
-- The idempotency key is enforced via a request header, which is a good practice to prevent duplicate payment processing.
-- The presence of a deliberate `NullPointerException` risk in the code is likely for demonstration or testing purposes and should be removed or handled properly in production.
-- The controller delegates all business logic to the `PaymentService`, maintaining separation of concerns.
-- OpenAPI annotations improve API documentation and integration with tools like Swagger UI.
+- The controller cleanly separates HTTP request handling from business logic by delegating to `PaymentService`.
+- The use of an idempotency key header is a good practice to avoid duplicate payment processing.
+- The presence of a potential `NullPointerException` in the code is likely a placeholder or test code and should be removed or fixed to avoid runtime errors.
+- The controller uses OpenAPI annotations to provide API documentation metadata, facilitating API client generation and documentation.
 
 ---
 
 ## Summary Table
 
-| Aspect               | Details                                                      |
-|----------------------|--------------------------------------------------------------|
-| Base URL             | `/api/payments`                                              |
-| HTTP Method          | POST                                                        |
-| Request Body         | `PaymentRequest`                                            |
-| Request Header       | `Idempotency-Key`                                           |
-| Response             | `PaymentTransaction` wrapped in `ResponseEntity`           |
-| Exception Handling   | No explicit handling; potential NPE in code snippet noted   |
-| External Dependencies| `PaymentService`, DTOs, and models from the `com.bank.payments` package |
+| Aspect               | Details                                      |
+|----------------------|----------------------------------------------|
+| Base URL             | `/api/payments`                              |
+| HTTP Method          | POST                                         |
+| Request Body         | `PaymentRequest`                             |
+| Request Header       | `Idempotency-Key`                            |
+| Response             | `PaymentTransaction` wrapped in `ResponseEntity` |
+| Exception Handling   | Not explicitly handled in this controller   |
+| External Dependencies| `PaymentService`                             |

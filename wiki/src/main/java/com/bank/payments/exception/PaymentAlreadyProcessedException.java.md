@@ -12,14 +12,14 @@
 | public   | PaymentAlreadyProcessedException | RuntimeException | Exception indicating a payment was already processed |
 
 ## Constructor
-| Constructor Signature                          | Description                                      |
-|-----------------------------------------------|------------------------------------------------|
+| Constructor Signature                          | Description                                  |
+|-----------------------------------------------|----------------------------------------------|
 | `PaymentAlreadyProcessedException(String message)` | Creates a new exception instance with a detailed message explaining the cause. |
 
 ## Usage
-This exception should be thrown in scenarios where an attempt is made to process a payment that has already been completed, preventing duplicate processing.
+This exception is intended to be thrown when an attempt is made to process a payment that has already been completed, preventing duplicate processing.
 
 ## Insights
 - Extending `RuntimeException` means this exception is unchecked, so it does not require mandatory try-catch blocks or throws declarations.
-- The class is minimalistic, focusing solely on conveying the error message.
-- This design supports clear error signaling in payment processing workflows, improving error handling and debugging.
+- The class only provides a constructor that accepts a message, which is passed to the superclass to provide context about the error.
+- This design supports clear and specific error handling related to payment processing workflows in banking or financial applications.

@@ -20,14 +20,15 @@ The `PaymentService` interface defines a contract for processing payment transac
 - **processPayment(PaymentRequest request): PaymentTransaction**  
   Accepts a `PaymentRequest` object containing the details necessary to initiate a payment. The method processes this request and returns a `PaymentTransaction` object representing the outcome of the payment operation.
 
-## Data Structures Referenced
+## Data Structures Involved
 
-| Class Name           | Package                  | Description                                  |
-|----------------------|--------------------------|----------------------------------------------|
-| `PaymentRequest`     | `com.bank.payments.dto`  | Data Transfer Object encapsulating payment request details. |
-| `PaymentTransaction` | `com.bank.payments.model`| Model representing the payment transaction result. |
+| Class Name           | Description                                  |
+|----------------------|----------------------------------------------|
+| `PaymentRequest`     | Data Transfer Object (DTO) encapsulating payment request details. |
+| `PaymentTransaction` | Model representing the payment transaction result. |
 
 ## Insights
+
 - The interface abstracts the payment processing logic, allowing different implementations to handle payment transactions.
-- The use of DTO (`PaymentRequest`) and model (`PaymentTransaction`) promotes separation of concerns between data representation and business logic.
-- This interface is designed for extensibility and testability, enabling mocking or alternative implementations for different payment gateways or business rules.
+- The use of DTO (`PaymentRequest`) and model (`PaymentTransaction`) promotes separation of concerns and clean data handling.
+- This interface is designed for extensibility and testability, enabling multiple payment processing strategies or integrations.
