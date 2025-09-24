@@ -11,9 +11,9 @@ The `PaymentService` interface defines a contract for processing payment transac
 
 ## Methods
 
-| Method Name     | Parameters           | Return Type         | Description                                      |
-|-----------------|----------------------|---------------------|------------------------------------------------|
-| `processPayment`| `PaymentRequest request` | `PaymentTransaction` | Processes a payment request and returns the resulting payment transaction. |
+| Method Name     | Parameters           | Return Type         | Description                                  |
+|-----------------|----------------------|---------------------|----------------------------------------------|
+| `processPayment` | `PaymentRequest request` | `PaymentTransaction` | Processes a payment request and returns the resulting payment transaction. |
 
 ### Method Details
 
@@ -22,12 +22,12 @@ The `PaymentService` interface defines a contract for processing payment transac
 
 ## Data Structures Referenced
 
-| Class Name           | Package                  | Description                                  |
-|----------------------|--------------------------|----------------------------------------------|
-| `PaymentRequest`     | `com.bank.payments.dto`  | Data Transfer Object encapsulating payment request details. |
-| `PaymentTransaction` | `com.bank.payments.model`| Model representing the payment transaction result. |
+| Class Name          | Package                  | Description                                  |
+|---------------------|--------------------------|----------------------------------------------|
+| `PaymentRequest`    | `com.bank.payments.dto`  | Data Transfer Object encapsulating payment request details. |
+| `PaymentTransaction`| `com.bank.payments.model`| Model representing the payment transaction result. |
 
 ## Insights
-- The interface abstracts the payment processing logic, allowing different implementations to handle payment transactions.
+- The interface abstracts the payment processing logic, allowing different implementations to define how payments are handled.
 - The use of DTO (`PaymentRequest`) and model (`PaymentTransaction`) promotes separation of concerns between data representation and business logic.
 - This interface is designed for extensibility and testability, enabling mocking or alternative implementations for different payment gateways or business rules.

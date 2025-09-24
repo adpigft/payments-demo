@@ -7,17 +7,17 @@
 `com.bank.payments.exception`
 
 ## Class Definition
-| Modifier | Class Name                    | Extends          | Description                                      |
-|----------|------------------------------|------------------|------------------------------------------------|
-| public   | PaymentAlreadyProcessedException | RuntimeException | Exception indicating a payment was already processed |
+| Class Name                    | Extends          | Description                                      |
+|------------------------------|------------------|------------------------------------------------|
+| PaymentAlreadyProcessedException | RuntimeException | Signals that a payment has already been processed |
 
 ## Constructor
-| Constructor Signature                          | Description                                      |
-|-----------------------------------------------|------------------------------------------------|
-| `PaymentAlreadyProcessedException(String message)` | Creates a new exception instance with a detailed message explaining the cause. |
+| Constructor Signature                          | Description                                  |
+|-----------------------------------------------|----------------------------------------------|
+| `PaymentAlreadyProcessedException(String message)` | Creates a new exception instance with a detailed message explaining the error. |
 
 ## Usage
-This exception should be thrown in scenarios where an attempt is made to process a payment that has already been completed, preventing duplicate processing.
+This exception is intended to be thrown when an operation attempts to process a payment that has already been completed, preventing duplicate processing.
 
 ## Insights
 - Extending `RuntimeException` means this exception is unchecked, so it does not require mandatory try-catch blocks or throws declarations.
